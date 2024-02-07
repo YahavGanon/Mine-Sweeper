@@ -1,7 +1,9 @@
 'use strict'
 var boardSize = 4
 var gBoard
+var numberOfClicks = 0
 const MINE = '<img src="img/bomb.png">'
+var timerInterval
 
 const gCell = {
     minesAroundCount: 0,
@@ -18,7 +20,7 @@ const gCell = {
 //    }
 
 const onInit = () => {
-    gBoard = placeNumbers(createBoard())
+    gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
 
 
@@ -29,7 +31,7 @@ const createBoard = () => {
     for (var i = 0; i < boardSize; i++) {
         board.push([])
         for (var j = 0; j < boardSize; j++) {
-            board[i][j] = {...gCell}
+            board[i][j] = { ...gCell }
         }
     }
     board[2][3].isMine = true
@@ -46,9 +48,12 @@ const renderBoard = (board) => {
             const cell = board[i][j]
             const className = `cell cell-${i}-${j}`
             strHTML += `<td data-i=${i} data-j=${j} onclick="onCellClicked(this, ${i}, ${j})" class="${className}">`
+            // if(cell.minesAroundCount === 0){
+            //     strHTML += ' '
+            // }
             if (cell.isMine === true) {
                 strHTML += MINE
-            }else{
+            } else {
                 strHTML += cell.minesAroundCount
             }
             strHTML += `</td>`
@@ -60,13 +65,21 @@ const renderBoard = (board) => {
 }
 
 const onCellClicked = (td1) => {
+    numberOfClicks++
+    if (numberOfClicks === 1) {
+        startTimer()
+    }
+    if (gBoard.isMine) {
+        console.log(gBoard)
+    }
 
-
-
-
+    // console.log(gBoard)
 }
 
-const placeNumbers = (board) => {
+
+
+
+const setMinesNegsCount = (board) => {
     for (let i = 0; i < board.length; i++) {
         for (let j = 0; j < board[0].length; j++) {
             if (board[i][j].isMine === true) {
@@ -104,29 +117,22 @@ const placeNumbers = (board) => {
     return board;
 }
 
-const setMinesNegsCount = () => {
-    for (var i = 0; i < boardSize; i++) {
-        for (var j = 0; j < boardSize; j++) {
-
-        }
-    }
-
+const startTimer = () => {
+    const startingTime = Date.now()
+    timerInterval = setInterval(() => {
+        const timePastInSec = (Date.now() - startingTime) / 1000
+        document.querySelector('.timer').textContent = timePastInSec.toFixed(3)
+    }, 50)
 }
 
-function renderCountGamerNegs() {
-    var negsCount = 0;
-    for (var i = gGamerPos.i - 1; i <= gGamerPos.i + 1; i++) {
-        if (i < 0 || i >= gBoard.length) continue;
-        for (var j = gGamerPos.j - 1; j <= gGamerPos.j + 1; j++) {
-            if (j < 0 || j >= gBoard[i].length) continue;
-            if (i === gGamerPos.i && j === gGamerPos.j) continue;
-            const currCell = gBoard[i][j]
-            if (currCell.gameElement === BALL) negsCount++;
-        }
-    }
-    const elNgsCount = document.querySelector('.negs-count span')
-    elNgsCount.innerText = negsCount
+const resetTimer = () => {
+    return clearInterval(timerInterval)
 }
+
+
+
+
+
 
 
 // document.addEventListener('contextmenu', event => {
