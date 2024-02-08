@@ -1,46 +1,62 @@
 'use strict'
 var boardSize = 4
 var gBoard
-var numberOfClicks 
+var numberOfClicks
 const MINE = '<img class="bomb" src="img/bomb.png">'
 var timerInterval
+var gameModes = [16, 64, 144]
+var selectedGameMode = 16
+var numberOfMines = 2
+const elheart = document.querySelector('.hearts')
+const gameModeContainer = document.querySelector('.game-mode')
 
 const gCell = {
     minesAroundCount: 0,
     isShown: false,
     isMine: false,
     isMarked: false
-
 }
-// gGame = {
-//     isOn: false,
-//     shownCount: 0,
-//     markedCount: 0
-//     // secsPassed: 0
-//    }
 
 const onInit = () => {
-    resetTimer
+    resetTimer()
+    elheart.innerText = '❤️'
     numberOfClicks = 0
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
+    initGameModes()
+}
 
+const gameModeChange = (mode) => {
+    selectedGameMode = mode
+    gBoard = setMinesNegsCount(createBoard())
+    renderBoard(gBoard)
+    numberOfClicks = 0
+    console.log(mode)
 
+}
 
+const initGameModes = () => {
+    const gameModeContainer = document.querySelector('.game-mode')
+    for (let i = 0; i < gameModes.length; i++) {
+        const button = document.createElement('button')
+        button.textContent = gameModes[i]
+        button.addEventListener('click', () => {
+            gameModeChange(gameModes[i])
+        })
+        gameModeContainer.appendChild(button)
+    }
 }
 
 const createBoard = () => {
     const board = []
+    boardSize = Math.sqrt(selectedGameMode)
     for (var i = 0; i < boardSize; i++) {
         board.push([])
         for (var j = 0; j < boardSize; j++) {
             board[i][j] = { ...gCell }
         }
     }
-    // board[generateRandomNumber()][generateRandomNumber()].isMine = true
-    // board[generateRandomNumber()][generateRandomNumber()].isMine = true
 
-    // console.log(board)
     return board
 }
 
@@ -61,11 +77,8 @@ const renderBoard = (board) => {
                     strHTML += cell.minesAroundCount
                 }
             }
-            // if(numberOfClicks === 1){
+
             strHTML += `<div class="hideCell"></div></td>`
-            // }else{
-            //     strHTML += `</td>`
-            // }
 
         }
         strHTML += '</tr>'
@@ -74,38 +87,43 @@ const renderBoard = (board) => {
     elContainer.innerHTML = strHTML
 }
 
+const onCellClicked = (td1, i, j) => {
+    numberOfClicks++
+    const cell = gBoard[i][j]
+    if (cell.isMarked) return
+    if (cell.isShown) return
 
-const onCellClicked = (td1) => {
-    // console.log(td1.innerHTML)
     const divElemnt = td1.querySelector('.hideCell')
-    const bomb = td1.querySelector('.bomb')
-    const matches = document.querySelectorAll(".bomb");
-    if (bomb) {
-        // console.log(matches)
-        matches.forEach(matches => matches.classList.remove("hideCell"))
-        gameOver()
-    }
-    else {
-        numberOfClicks++
-    }
+
     if (numberOfClicks === 1) {
         startTimer()
-        const boardWithNoMines = createBoard()
-        const boardWithMines = generateMines(boardWithNoMines)
-        gBoard = setMinesNegsCount(boardWithMines)
-        renderBoard(gBoard)
+        generateMines(i, j)
+        setMinesNegsCount(gBoard)
+        revealCell(td1, i, j)
+    } else {
+        revealCell(td1, i, j)
     }
-
-    // console.log(divElemnt)
     if (divElemnt) {
         divElemnt.classList.remove('hideCell')
     }
-
-    // console.log(td1.innerHTML)
 }
 
-
-
+const revealCell = (td1, i, j) => {
+    const elHearts = document.querySelector('.hearts')
+    const cell = gBoard[i][j]
+    if (cell.isMine) {
+        elHearts.innerText = ' '
+        td1.innerHTML = MINE
+        gameOver()
+    } else {
+        if (cell.minesAroundCount > 0) {
+            td1.innerHTML = cell.minesAroundCount
+        } else {
+            td1.minesAroundCount = ' '
+        }
+    }
+    cell.isShown = true
+}
 
 const setMinesNegsCount = (board) => {
     for (let i = 0; i < board.length; i++) {
@@ -167,25 +185,58 @@ const generateRandomNumber = () => {
     return Math.floor(Math.random() * boardSize)
 }
 
-const generateMines = (gBoard) => {
-    console.log(gBoard)
-    gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
-    gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
-    return gBoard
+const generateMines = (iMatrixLocation, jMatrixLocation) => {
+    let minesPlaced = 0
+    console.log(selectedGameMode)
+    if (selectedGameMode === 16) {
+        numberOfMines = 2
+    }
+    if (selectedGameMode === 64) {
+        numberOfMines = 14
+    }
+    if (selectedGameMode === 144) {
+        numberOfMines = 32
+    }
+    while (minesPlaced < numberOfMines) {
+        let i = generateRandomNumber()
+        let j = generateRandomNumber()
+        if (!gBoard[i][j].isMine && (i !== iMatrixLocation || j !== jMatrixLocation)) {
+            gBoard[i][j].isMine = true
+
+            minesPlaced++
+        }
+    }
 }
 
 const gameOver = () => {
     resetTimer()
-    // numberOfClicks = 0
-    // onInit()
 }
 
+const checkVictory = () => {
+}
 
+const rightClick = (event) => {
+    const cell = event.target.closest("td")
+    const i = cell.getAttribute("data-i")
+    const j = cell.getAttribute("data-j")
 
+    if (gBoard[i][j].isShown) return
+    const isFlagged = gBoard[i][j].isMarked = !gBoard[i][j].isMarked
+    if (isFlagged) {
+        cell.innerHTML += `<span class="flag">🚩</span>`
+    } else {
+        cell.innerHTML = cell.innerHTML.replace(`<span class="flag">🚩</span>`, " ")
+    }
+}
 
+document.addEventListener("DOMContentLoaded", () => {
+    const gameBoard = document.querySelector(".board")
+    if (gameBoard) {
+        gameBoard.addEventListener("contextmenu", event => {
+            event.preventDefault()
+            rightClick(event)
+        })
+    }
+})
 
-
-// document.addEventListener('contextmenu', event => {
-//     event.preventDefault();
-// });
 
