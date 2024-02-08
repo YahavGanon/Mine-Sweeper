@@ -48,9 +48,21 @@ table {
     height: 60px;
 }
 
+.restatButton {
+    margin-left: 956px;
+   
+    /* margin: 0 auto; */
+    /* display: flex; */
+    /* align-items: center; */
+
+}
+
 .timer {
-    text-align: center;
+    /* text-align: center; */
+    padding: 15px;
+    display: inline-block;
     font-size: 20px;
     
 }
+
 

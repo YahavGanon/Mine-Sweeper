@@ -1,7 +1,7 @@
 'use strict'
 var boardSize = 4
 var gBoard
-var numberOfClicks = 0
+var numberOfClicks 
 const MINE = '<img class="bomb" src="img/bomb.png">'
 var timerInterval
 
@@ -20,8 +20,11 @@ const gCell = {
 //    }
 
 const onInit = () => {
+    resetTimer
+    numberOfClicks = 0
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
+
 
 
 }
@@ -59,7 +62,7 @@ const renderBoard = (board) => {
                 }
             }
             // if(numberOfClicks === 1){
-                strHTML += `<div class="hideCell"></div></td>`
+            strHTML += `<div class="hideCell"></div></td>`
             // }else{
             //     strHTML += `</td>`
             // }
@@ -71,12 +74,15 @@ const renderBoard = (board) => {
     elContainer.innerHTML = strHTML
 }
 
+
 const onCellClicked = (td1) => {
     // console.log(td1.innerHTML)
-
-    
+    const divElemnt = td1.querySelector('.hideCell')
     const bomb = td1.querySelector('.bomb')
+    const matches = document.querySelectorAll(".bomb");
     if (bomb) {
+        // console.log(matches)
+        matches.forEach(matches => matches.classList.remove("hideCell"))
         gameOver()
     }
     else {
@@ -85,17 +91,17 @@ const onCellClicked = (td1) => {
     if (numberOfClicks === 1) {
         startTimer()
         const boardWithNoMines = createBoard()
-       const boardWithMines = generateMines(boardWithNoMines)
+        const boardWithMines = generateMines(boardWithNoMines)
         gBoard = setMinesNegsCount(boardWithMines)
         renderBoard(gBoard)
     }
-    const divElemnt = td1.querySelector('.hideCell')
-console.log(divElemnt)
+
+    // console.log(divElemnt)
     if (divElemnt) {
         divElemnt.classList.remove('hideCell')
     }
 
-    // console.log(gBoard)
+    // console.log(td1.innerHTML)
 }
 
 
@@ -166,6 +172,12 @@ const generateMines = (gBoard) => {
     gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
     gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
     return gBoard
+}
+
+const gameOver = () => {
+    resetTimer()
+    // numberOfClicks = 0
+    // onInit()
 }
 
 
