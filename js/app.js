@@ -2,7 +2,7 @@
 var boardSize = 4
 var gBoard
 var numberOfClicks = 0
-const MINE = '<img src="img/bomb.png">'
+const MINE = '<img class="bomb" src="img/bomb.png">'
 var timerInterval
 
 const gCell = {
@@ -34,9 +34,10 @@ const createBoard = () => {
             board[i][j] = { ...gCell }
         }
     }
-    board[2][3].isMine = true
-    board[3][2].isMine = true
+    // board[generateRandomNumber()][generateRandomNumber()].isMine = true
+    // board[generateRandomNumber()][generateRandomNumber()].isMine = true
 
+    // console.log(board)
     return board
 }
 
@@ -48,15 +49,21 @@ const renderBoard = (board) => {
             const cell = board[i][j]
             const className = `cell cell-${i}-${j}`
             strHTML += `<td data-i=${i} data-j=${j} onclick="onCellClicked(this, ${i}, ${j})" class="${className}">`
-            // if(cell.minesAroundCount === 0){
-            //     strHTML += ' '
-            // }
             if (cell.isMine === true) {
                 strHTML += MINE
             } else {
-                strHTML += cell.minesAroundCount
+                if (cell.minesAroundCount === 0) {
+                    strHTML += ' ';
+                } else {
+                    strHTML += cell.minesAroundCount
+                }
             }
-            strHTML += `</td>`
+            // if(numberOfClicks === 1){
+                strHTML += `<div class="hideCell"></div></td>`
+            // }else{
+            //     strHTML += `</td>`
+            // }
+
         }
         strHTML += '</tr>'
     }
@@ -65,12 +72,27 @@ const renderBoard = (board) => {
 }
 
 const onCellClicked = (td1) => {
-    numberOfClicks++
+    // console.log(td1.innerHTML)
+
+    
+    const bomb = td1.querySelector('.bomb')
+    if (bomb) {
+        gameOver()
+    }
+    else {
+        numberOfClicks++
+    }
     if (numberOfClicks === 1) {
         startTimer()
+        const boardWithNoMines = createBoard()
+       const boardWithMines = generateMines(boardWithNoMines)
+        gBoard = setMinesNegsCount(boardWithMines)
+        renderBoard(gBoard)
     }
-    if (gBoard.isMine) {
-        console.log(gBoard)
+    const divElemnt = td1.querySelector('.hideCell')
+console.log(divElemnt)
+    if (divElemnt) {
+        divElemnt.classList.remove('hideCell')
     }
 
     // console.log(gBoard)
@@ -129,6 +151,22 @@ const resetTimer = () => {
     return clearInterval(timerInterval)
 }
 
+const renderCell = (cellI, cellJ, val) => {
+    const elCell = document.querySelector(`[data-i="${cellI}"][data-j="${cellJ}"]`)
+    elCell.innerText = val
+    return elCell
+}
+
+const generateRandomNumber = () => {
+    return Math.floor(Math.random() * boardSize)
+}
+
+const generateMines = (gBoard) => {
+    console.log(gBoard)
+    gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
+    gBoard[generateRandomNumber()][generateRandomNumber()].isMine = true
+    return gBoard
+}
 
 
 

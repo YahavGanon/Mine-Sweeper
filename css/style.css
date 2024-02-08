@@ -22,20 +22,27 @@ table {
     width: 100px;
     height: 100px;
     border: 1px solid black;
-    padding: 10px;
     text-align: center;
     transition: background-color 0.5s;
     /* cursor: pointer; */
 }
 
-/* .occupied {
-    background-color: rgb(156, 155, 155);
-} */
 .cell {
     width: 35px;
     height: 50px;
+    background-color: rgb(83, 81, 81);
+    position: relative;
     /* border-radius: 7px; */
 }
+.hideCell {
+   background: rgb(154, 154, 154);
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0px;
+    z-index: 10;
+}
+
 .board img {
     width: 60px;
     height: 60px;
