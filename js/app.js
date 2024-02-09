@@ -8,8 +8,12 @@ var gameModes = [16, 64, 144]
 var selectedGameMode = 16
 var numberOfMines = 3
 var numOfStrikes
-const elheart = document.querySelector('.hearts')
+var counterFlags = 0
+const elFlags = document.querySelector('.flags')
+elFlags.innerText = '🚩 ' + counterFlags
+const elHeart = document.querySelector('.hearts')
 const gameModeContainer = document.querySelector('.game-mode')
+
 
 const gCell = {
     minesAroundCount: 0,
@@ -19,9 +23,10 @@ const gCell = {
 }
 
 const onInit = () => {
+    changeButton()
     resetTimer()
-    elheart.innerText = '❤️❤️❤️'
-    numOfStrikes = 3
+    restartFlags()
+    restartStrikes()
     numberOfClicks = 0
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
@@ -43,8 +48,10 @@ const initGameModes = () => {
         const button = document.createElement('button')
         button.textContent = gameModes[i]
         button.addEventListener('click', () => {
-            elheart.innerText = '❤️❤️❤️'
-            numOfStrikes = 3
+            changeButton()
+            restartStrikes()
+            resetTimer()
+            restartFlags()
             gameModeChange(gameModes[i])
         })
         gameModeContainer.appendChild(button)
@@ -60,7 +67,6 @@ const createBoard = () => {
             board[i][j] = { ...gCell }
         }
     }
-
     return board
 }
 
@@ -117,19 +123,8 @@ const onCellClicked = (td1, i, j) => {
 
 const revealCell = (td1, i, j) => {
     const elHearts = document.querySelector('.hearts')
-    console.log(gBoard[i][j])
     const cell = gBoard[i][j]
-    // if (cell.isMine) {
-    //     elHearts.innerText = ' '
-    //     td1.innerHTML = MINE
-    // gameOver()
-    // } else {
-    //     if (cell.minesAroundCount > 0) {
-    //         td1.innerHTML = cell.minesAroundCount
-    //     } else {
-    //         td1.minesAroundCount = ' '
-    //     }
-    // }
+
     if (cell.isMine) {
         numOfStrikes--
         td1.innerHTML = MINE
@@ -150,7 +145,6 @@ const revealCell = (td1, i, j) => {
         elHearts.innerText = ''
         gameOver()
     }
-
     cell.isShown = true
 }
 
@@ -216,7 +210,6 @@ const generateRandomNumber = () => {
 
 const generateMines = (iMatrixLocation, jMatrixLocation) => {
     let minesPlaced = 0
-    console.log(selectedGameMode)
     if (selectedGameMode === 16) {
         numberOfMines = 3
     }
@@ -239,7 +232,10 @@ const generateMines = (iMatrixLocation, jMatrixLocation) => {
 
 const gameOver = () => {
     resetTimer()
+    const buttonCondition = document.querySelector('.restatButton')
+    buttonCondition.innerText = '😵'
 }
+
 
 const checkVictory = () => {
 }
@@ -248,12 +244,15 @@ const rightClick = (event) => {
     const cell = event.target.closest("td")
     const i = cell.getAttribute("data-i")
     const j = cell.getAttribute("data-j")
-
     if (gBoard[i][j].isShown) return
     const isFlagged = gBoard[i][j].isMarked = !gBoard[i][j].isMarked
     if (isFlagged) {
+        counterFlags++
+        elFlags.innerText = '🚩 ' + counterFlags
         cell.innerHTML += `<span class="flag">🚩</span>`
     } else {
+        counterFlags--
+        elFlags.innerText = '🚩 ' + counterFlags
         cell.innerHTML = cell.innerHTML.replace(`<span class="flag">🚩</span>`, " ")
     }
 }
@@ -268,4 +267,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 })
 
+const restartFlags = () => {
+    counterFlags = 0
+    elFlags.innerText = '🚩 ' + counterFlags
+}
+
+const restartStrikes = () => {
+    elHeart.innerText = '❤️❤️❤️'
+    numOfStrikes = 3
+}
+
+const changeButton = () => {
+    const buttonCondition = document.querySelector('.restatButton')
+    buttonCondition.innerText = '😁'
+}
 
