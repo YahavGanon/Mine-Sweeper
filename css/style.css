@@ -60,7 +60,6 @@ table {
     padding: 15px;
     display: inline-block;
     font-size: 20px;
-
 }
 
 .game-mode button {
@@ -70,6 +69,7 @@ table {
 .game-mode {
     text-align: center;
 }
+
 .footer {
     margin-top: 50px;
 }

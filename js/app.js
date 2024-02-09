@@ -6,7 +6,8 @@ const MINE = '<img class="bomb" src="img/bomb.png">'
 var timerInterval
 var gameModes = [16, 64, 144]
 var selectedGameMode = 16
-var numberOfMines = 2
+var numberOfMines = 3
+var numOfStrikes
 const elheart = document.querySelector('.hearts')
 const gameModeContainer = document.querySelector('.game-mode')
 
@@ -19,7 +20,8 @@ const gCell = {
 
 const onInit = () => {
     resetTimer()
-    elheart.innerText = '❤️'
+    elheart.innerText = '❤️❤️❤️'
+    numOfStrikes = 3
     numberOfClicks = 0
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
@@ -41,6 +43,8 @@ const initGameModes = () => {
         const button = document.createElement('button')
         button.textContent = gameModes[i]
         button.addEventListener('click', () => {
+            elheart.innerText = '❤️❤️❤️'
+            numOfStrikes = 3
             gameModeChange(gameModes[i])
         })
         gameModeContainer.appendChild(button)
@@ -103,18 +107,32 @@ const onCellClicked = (td1, i, j) => {
     } else {
         revealCell(td1, i, j)
     }
-    if (divElemnt) {
+    if (divElemnt && (cell.isMine === false)) {
+        divElemnt.classList.remove('hideCell')
+    }
+    if (divElemnt && cell.isMine && (numOfStrikes === 0)) {
         divElemnt.classList.remove('hideCell')
     }
 }
 
 const revealCell = (td1, i, j) => {
     const elHearts = document.querySelector('.hearts')
+    console.log(gBoard[i][j])
     const cell = gBoard[i][j]
+    // if (cell.isMine) {
+    //     elHearts.innerText = ' '
+    //     td1.innerHTML = MINE
+    // gameOver()
+    // } else {
+    //     if (cell.minesAroundCount > 0) {
+    //         td1.innerHTML = cell.minesAroundCount
+    //     } else {
+    //         td1.minesAroundCount = ' '
+    //     }
+    // }
     if (cell.isMine) {
-        elHearts.innerText = ' '
+        numOfStrikes--
         td1.innerHTML = MINE
-        gameOver()
     } else {
         if (cell.minesAroundCount > 0) {
             td1.innerHTML = cell.minesAroundCount
@@ -122,6 +140,17 @@ const revealCell = (td1, i, j) => {
             td1.minesAroundCount = ' '
         }
     }
+    if (numOfStrikes === 2) {
+        elHearts.innerText = '❤️❤️'
+    }
+    if (numOfStrikes === 1) {
+        elHearts.innerText = '❤️'
+    }
+    if (numOfStrikes === 0) {
+        elHearts.innerText = ''
+        gameOver()
+    }
+
     cell.isShown = true
 }
 
@@ -189,7 +218,7 @@ const generateMines = (iMatrixLocation, jMatrixLocation) => {
     let minesPlaced = 0
     console.log(selectedGameMode)
     if (selectedGameMode === 16) {
-        numberOfMines = 2
+        numberOfMines = 3
     }
     if (selectedGameMode === 64) {
         numberOfMines = 14
