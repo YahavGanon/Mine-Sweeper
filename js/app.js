@@ -9,11 +9,11 @@ var selectedGameMode = 16
 var numberOfMines = 3
 var numOfStrikes
 var counterFlags = 0
+var counterReveals = 0
 const elFlags = document.querySelector('.flags')
 elFlags.innerText = '🚩 ' + counterFlags
 const elHeart = document.querySelector('.hearts')
 const gameModeContainer = document.querySelector('.game-mode')
-
 
 const gCell = {
     minesAroundCount: 0,
@@ -31,6 +31,7 @@ const onInit = () => {
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
     initGameModes()
+
 }
 
 const gameModeChange = (mode) => {
@@ -100,6 +101,7 @@ const renderBoard = (board) => {
 const onCellClicked = (td1, i, j) => {
     numberOfClicks++
     const cell = gBoard[i][j]
+    checkVictory(cell)
     if (cell.isMarked) return
     if (cell.isShown) return
 
@@ -124,6 +126,7 @@ const onCellClicked = (td1, i, j) => {
 const revealCell = (td1, i, j) => {
     const elHearts = document.querySelector('.hearts')
     const cell = gBoard[i][j]
+
 
     if (cell.isMine) {
         numOfStrikes--
@@ -236,8 +239,16 @@ const gameOver = () => {
     buttonCondition.innerText = '😵'
 }
 
-
-const checkVictory = () => {
+const checkVictory = (td) => {
+    if (td.isMine === false) {
+        counterReveals++
+        console.log(counterReveals)
+    }
+    if (counterReveals === (selectedGameMode - numberOfMines)) {
+        console.log('You Won!')
+        counterReveals = 0
+        resetTimer()
+    }
 }
 
 const rightClick = (event) => {
@@ -275,6 +286,7 @@ const restartFlags = () => {
 const restartStrikes = () => {
     elHeart.innerText = '❤️❤️❤️'
     numOfStrikes = 3
+    counterReveals = 0
 }
 
 const changeButton = () => {
