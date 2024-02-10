@@ -22,6 +22,10 @@ const gCell = {
     isMarked: false
 }
 
+const hint = {
+    isClicked: false
+}
+
 const onInit = () => {
     changeButton()
     resetTimer()
@@ -31,7 +35,6 @@ const onInit = () => {
     gBoard = setMinesNegsCount(createBoard())
     renderBoard(gBoard)
     initGameModes()
-
 }
 
 const gameModeChange = (mode) => {
@@ -40,11 +43,11 @@ const gameModeChange = (mode) => {
     renderBoard(gBoard)
     numberOfClicks = 0
     console.log(mode)
-
 }
 
 const initGameModes = () => {
     const gameModeContainer = document.querySelector('.game-mode')
+    if (gameModeContainer.textContent === `Game Modes: ${16}${64}${144}`) return
     for (let i = 0; i < gameModes.length; i++) {
         const button = document.createElement('button')
         button.textContent = gameModes[i]
@@ -88,9 +91,7 @@ const renderBoard = (board) => {
                     strHTML += cell.minesAroundCount
                 }
             }
-
             strHTML += `<div class="hideCell"></div></td>`
-
         }
         strHTML += '</tr>'
     }
@@ -104,9 +105,7 @@ const onCellClicked = (td1, i, j) => {
     checkVictory(cell)
     if (cell.isMarked) return
     if (cell.isShown) return
-
     const divElemnt = td1.querySelector('.hideCell')
-
     if (numberOfClicks === 1) {
         startTimer()
         generateMines(i, j)
@@ -126,8 +125,6 @@ const onCellClicked = (td1, i, j) => {
 const revealCell = (td1, i, j) => {
     const elHearts = document.querySelector('.hearts')
     const cell = gBoard[i][j]
-
-
     if (cell.isMine) {
         numOfStrikes--
         td1.innerHTML = MINE
@@ -149,6 +146,14 @@ const revealCell = (td1, i, j) => {
         gameOver()
     }
     cell.isShown = true
+}
+
+// the goal is to use timeOut and when click on cell its will show for just one sec the cell ! good luck :)
+const revealNegsCell = () => {
+
+}
+
+const hintAction = () => {
 }
 
 const setMinesNegsCount = (board) => {
@@ -235,8 +240,17 @@ const generateMines = (iMatrixLocation, jMatrixLocation) => {
 
 const gameOver = () => {
     resetTimer()
-    const buttonCondition = document.querySelector('.restatButton')
-    buttonCondition.innerText = '😵'
+    for (let i = 0; i < gBoard.length; i++) {
+        for (let j = 0; j < gBoard[0].length; j++) {
+            const elCell = document.querySelector(`[data-i="${i}"][data-j="${j}"]`)
+            if (gBoard[i][j].isMine === true && gBoard[i][j].isShown === false) {
+                elCell.classList.remove('hideCell')
+                elCell.innerHTML = MINE
+            }
+        }
+        const buttonCondition = document.querySelector('.restatButton')
+        buttonCondition.innerText = '😵'
+    }
 }
 
 const checkVictory = (td) => {
@@ -246,6 +260,8 @@ const checkVictory = (td) => {
     }
     if (counterReveals === (selectedGameMode - numberOfMines)) {
         console.log('You Won!')
+        const buttonCondition = document.querySelector('.restatButton')
+        buttonCondition.innerText = '😎'
         counterReveals = 0
         resetTimer()
     }
@@ -293,4 +309,12 @@ const changeButton = () => {
     const buttonCondition = document.querySelector('.restatButton')
     buttonCondition.innerText = '😁'
 }
+
+
+
+
+
+
+
+
 

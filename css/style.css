@@ -54,12 +54,25 @@ table {
     font-size: 50px;
 }
 
+p {
+    text-align: center;
+}
+
+.hints {
+    margin: 0 auto;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    display: inline-flex;
+    font-size: 30px;
+}
+
 h2 {
     margin: 0 auto;
     align-items: center;
     flex-direction: column;
     text-align: center;
-   
+
 }
 
 .flags {
@@ -70,7 +83,7 @@ h2 {
     font-size: 40px;
     align-items: center;
     padding: 20px;
-    
+
 }
 
 .restatButton {
@@ -87,12 +100,12 @@ h2 {
 
 .game-mode button {
     font-size: 30px;
-    color:rgb(0, 0, 0);
+    color: rgb(0, 0, 0);
 }
 
 .game-mode {
     text-align: center;
-    font-size: 40px;
+    font-size: 45px;
     color: white;
 }
 
@@ -100,5 +113,9 @@ h2 {
     font-family: Georgia, 'Times New Roman', Times, serif;
     font-size: 20px;
     color: white;
-    margin-top: 50px;
+    margin-top: 110px;
+}
+
+.cell {
+    color: white;
 }
